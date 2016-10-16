@@ -39,10 +39,8 @@ def loopVideo(filename, nLoops, fadeFrames, allowReverse):
   corr   = crosscorrelate(signal)
 
 
-#Find the most prominent wavelength
+  #Find the most prominent wavelength
   waveL = waveLength(corr)
-
-
   [A, Freq, Phase], succes = fitSine(corr, Freq=1./waveL)
   fitfunc = lambda p, x: p[0] * np.cos(2*np.pi*p[1]*x + p[2])
   
@@ -83,17 +81,13 @@ def loopVideo(filename, nLoops, fadeFrames, allowReverse):
   else:
     # get the frames in the center of the original movie
     if allowReverse:
-      frames = loopRepetitionReverse(filename, bestStartFrame, bestStartLength, nLoops, videoWriter)
-      #saveFrames(videoWriter, frames)
-      del frames
+      loopRepetitionReverse(filename, bestStartFrame, bestStartLength, nLoops, videoWriter)
+
     else:
-      frames = loopRepetitionFade(filename, bestStartFrame-fadeFrames/2, bestStartLength, nLoops, fadeFrames, warpedFrames, videoWriter)
-      #frames = loopRepetitionFade(filename, bestStartFrame-fadeFrames/2, bestStartLength, nLoops, fadeFrames, crossfade, videoWriter)
-      # saveFrames(videoWriter, frames) # loopRepetitionFade has saved them already
-      del frames
+      loopRepetitionFade(filename, bestStartFrame-fadeFrames/2, bestStartLength, nLoops, fadeFrames, warpedFrames, videoWriter)
   
 
-  # get frames of the end of the video
+  # get frames at the end of the video
   if nLoops != 0: 
     frames = getFrames(filename, bestStartFrame+bestStartLength-fadeFrames/2)
     #frames = getFrames(filename, bestStartFrame+bestStartLength+fadeFrames/2)
@@ -106,16 +100,17 @@ def loopVideo(filename, nLoops, fadeFrames, allowReverse):
 def saveLoop(filename, nLoops=3, fadeFrames = 8, allowReverse = False):
 
   if allowReverse == True:
-    fadeFrames=0 # if reverse playback is allowed, then fading is not applied - independent of what the user said
+    fadeFrames=0 # if reverse playback is allowed, then fading is not applied
+    if nLoops == 0:
+      print("error: not implemented yet: infinite loop in combination with reverse playback")
+      exit()
 
-  # if nLoops < 0:
-  #   print ("error: nLoops < 0 ")
-  #   exit()
   if fadeFrames < 0:
     print ("error: fadeFrames < 0 ")
     exit()
+
   if allowReverse != False and allowReverse != True:
     print ("error: allowReverse must be either: True | False")
     exit()
 
-  frames = loopVideo(filename, nLoops, fadeFrames, allowReverse)
+  loopVideo(filename, nLoops, fadeFrames, allowReverse)

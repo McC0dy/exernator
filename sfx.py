@@ -122,11 +122,11 @@ def cutOutRepetition(filename, start, repLength, nLoops, fadeFrames, transitionF
   cap2 = cv2.VideoCapture(filename)
 
   # Skip to the start frame
-  cap1.set(cv2.CAP_PROP_POS_FRAMES, start)
+  cap2.set(cv2.CAP_PROP_POS_FRAMES, start)
 
   # Skip to the end frame
-  cap2.set(cv2.CAP_PROP_POS_FRAMES, start+repLength)
-  frames = transitionFunc(cap1, cap2, fadeFrames) # 'transitionFunc' is a func-arg
+  cap1.set(cv2.CAP_PROP_POS_FRAMES, start+repLength-fadeFrames)
+  frames = transitionFunc(cap2, cap1, fadeFrames) # 'transitionFunc' is a func-arg
 
   # save the fade we just created
   saveFrames(videoWriter, frames)
